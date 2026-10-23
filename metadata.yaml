@@ -4,7 +4,7 @@ tier: capability          # primitive | capability | blueprint
 maturity: experimental    # experimental | stable | deprecated
 description: SQS queue with a dead-letter queue by default, server-side encryption always on, optional FIFO
 owners: [platform]
-upstream: null            # e.g. "terraform-aws-modules/s3-bucket/aws 5.17.0"
+upstream: "terraform-aws-modules/sqs/aws 5.2.2"
 pairs_with: null          # e.g. "terraform-google-gcs-bucket"
 registry_name: terraform-aws-sqs-queue
 deprecated: null          # { removal: YYYY-MM-DD, replacement: <repo> }

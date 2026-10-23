@@ -1,17 +1,31 @@
 output "id" {
-  description = "Identifier of the primary resource. Null when create is false."
-  value       = var.create ? var.name : null
+  description = "Identifier (URL) of the main queue. Null when create is false."
+  value       = var.create ? module.this.queue_id : null
 }
 
 output "name" {
-  description = "Name of the primary resource. Null when create is false."
-  value       = var.create ? var.name : null
+  description = "Name of the main queue, including the .fifo suffix for FIFO queues. Null when create is false."
+  value       = var.create ? module.this.queue_name : null
 }
 
-# GCP modules replace this output with `self_link`. Replace `null` with the resource's ARN.
 output "arn" {
-  description = "ARN of the primary resource. Null when create is false."
-  value       = null
+  description = "ARN of the main queue. Null when create is false."
+  value       = var.create ? module.this.queue_arn : null
+}
+
+output "url" {
+  description = "URL of the main queue. Null when create is false."
+  value       = var.create ? module.this.queue_url : null
+}
+
+output "dlq_arn" {
+  description = "ARN of the dead-letter queue. Null when create is false or the dead-letter queue is disabled."
+  value       = var.create && var.dead_letter.enabled ? module.this.dead_letter_queue_arn : null
+}
+
+output "dlq_url" {
+  description = "URL of the dead-letter queue. Null when create is false or the dead-letter queue is disabled."
+  value       = var.create && var.dead_letter.enabled ? module.this.dead_letter_queue_url : null
 }
 
 output "tags" {
