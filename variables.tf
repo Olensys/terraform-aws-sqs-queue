@@ -1,9 +1,9 @@
 variable "name" {
-  description = "Base queue name. Lowercase letters, digits and hyphens, at most 75 characters so that the \".fifo\" suffix and the \"-dlq\" companion name stay within the 80-character SQS limit."
+  description = "Base queue name. Lowercase letters, digits and hyphens, at most 71 characters (80 minus 5 for \".fifo\" and 4 for \"-dlq\") so the FIFO suffix and the dead-letter queue name both fit the 80-character SQS limit."
   type        = string
   validation {
-    condition     = can(regex("^[a-z0-9-]{1,75}$", var.name))
-    error_message = "name must match ^[a-z0-9-]{1,75}$."
+    condition     = can(regex("^[a-z0-9-]{1,71}$", var.name))
+    error_message = "name must match ^[a-z0-9-]{1,71}$."
   }
 }
 

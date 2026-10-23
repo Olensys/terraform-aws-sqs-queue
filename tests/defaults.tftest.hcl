@@ -20,6 +20,7 @@ variables {
 }
 
 run "test_dlq_default_on" {
+  # SMOKE: the DLQ resource itself is in the child module; this observes only the outputs and variable defaults.
   # apply under the mock provider so computed attributes (arn, url) are known.
   command = apply
 
@@ -76,19 +77,24 @@ run "test_standard_has_no_fifo_suffix" {
 }
 
 run "test_sse_always" {
-  # apply under the mock provider so computed attributes (arn, url) are known.
-  command = apply
+  command = plan
 
-  # Child-module attributes are not visible to assertions. SSE is enforced
-  # in main.tf (sqs_managed_sse_enabled or kms_master_key_id) and checked by
-  # trivy; here we assert the plan succeeds with and without a CMK.
+  assert {
+    condition     = output.encryption.sqs_managed_sse_enabled == true && output.encryption.kms_master_key_id == null
+    error_message = "Default must use SQS-managed SSE."
+  }
+}
+
+run "test_sse_always_with_cmk" {
+  command = plan
+
   variables {
     kms_key_arn = "arn:aws:kms:eu-west-1:123456789012:key/11111111-2222-3333-4444-555555555555"
   }
 
   assert {
-    condition     = output.arn != null
-    error_message = "Queue must plan with a customer-managed key."
+    condition     = output.encryption.sqs_managed_sse_enabled == false && output.encryption.kms_master_key_id == "arn:aws:kms:eu-west-1:123456789012:key/11111111-2222-3333-4444-555555555555"
+    error_message = "A supplied CMK must be passed as kms_master_key_id with SQS-managed SSE off."
   }
 }
 
@@ -109,23 +115,23 @@ run "test_name_length_validation" {
   command = plan
 
   variables {
-    name = join("", [for i in range(76) : "a"])
+    name = join("", [for i in range(72) : "a"])
   }
 
   expect_failures = [var.name]
 }
 
-run "test_name_length_75_ok" {
+run "test_name_length_71_ok" {
   command = plan
 
   variables {
-    name = join("", [for i in range(75) : "a"])
+    name = join("", [for i in range(71) : "a"])
     fifo = true
   }
 
   assert {
-    condition     = length(output.name) == 80
-    error_message = "A 75-character base name with fifo must yield an 80-character queue name."
+    condition     = length(output.name) == 76
+    error_message = "A 71-character base name with fifo must yield a 76-character queue name."
   }
 }
 
@@ -137,4 +143,25 @@ run "test_name_rejects_uppercase" {
   }
 
   expect_failures = [var.name]
+}
+
+run "test_tags_contract" {
+  command = plan
+
+  variables {
+    tags = { Owner = "x" }
+    context = {
+      organization = "olensys"
+      environment  = "test"
+      application  = "example"
+      owner        = "platform"
+      cost_center  = "eng"
+      extra_tags   = { Owner = "y", Team = "z" }
+    }
+  }
+
+  assert {
+    condition     = output.tags.Owner == "x" && output.tags.Team == "z"
+    error_message = "var.tags must win over context.extra_tags, and extra_tags must be merged."
+  }
 }

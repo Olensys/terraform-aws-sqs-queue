@@ -32,3 +32,8 @@ output "tags" {
   description = "Tags applied to every taggable resource, with context.extra_tags merged in. Null when create is false."
   value       = var.create ? local.tags : null
 }
+
+output "encryption" {
+  description = "Encryption settings passed to the queue and its dead-letter queue: sqs_managed_sse_enabled and kms_master_key_id. Null when create is false."
+  value       = var.create ? local.encryption : null
+}

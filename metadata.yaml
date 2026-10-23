@@ -1,10 +1,10 @@
 name: terraform-aws-sqs-queue
-cloud: aws          # aws | google | common
-tier: capability          # primitive | capability | blueprint
-maturity: experimental    # experimental | stable | deprecated
+cloud: aws
+tier: capability
+maturity: experimental
 description: SQS queue with a dead-letter queue by default, server-side encryption always on, optional FIFO
 owners: [platform]
 upstream: "terraform-aws-modules/sqs/aws 5.2.2"
-pairs_with: null          # e.g. "terraform-google-gcs-bucket"
+pairs_with: null
 registry_name: terraform-aws-sqs-queue
-deprecated: null          # { removal: YYYY-MM-DD, replacement: <repo> }
+deprecated: null

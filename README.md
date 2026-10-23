@@ -6,7 +6,7 @@ SQS queue with a dead-letter queue by default, server-side encryption always on,
 
 - A dead-letter queue is created by default (`<name>-dlq`, 5 receives, 14 days retention); disable with `dead_letter = { enabled = false }`.
 - Server-side encryption is always on: SQS-managed by default, or the customer-managed key in `kms_key_arn`. It cannot be switched off. The same setting applies to the dead-letter queue.
-- The `.fifo` suffix is appended automatically when `fifo = true`; pass the base name only. Because of the suffix (and the `-dlq` companion), `name` is limited to 75 characters. SQS allows 80 for a standard queue, but this module enforces 75 for both kinds so the limit does not depend on `fifo`.
+- The `.fifo` suffix is appended automatically when `fifo = true`; pass the base name only. `name` is limited to 71 characters (80 minus 5 for `.fifo` and 4 for the `-dlq` companion) so that the FIFO suffix and the dead-letter queue name both stay within the 80-character SQS limit. The limit is fixed rather than dependent on `fifo` or `dead_letter` because variable validations on Terraform 1.5 cannot read other variables.
 - `consumer_principals` creates a queue policy allowing `sqs:ReceiveMessage`, `sqs:DeleteMessage`, `sqs:GetQueueAttributes` and `sqs:ChangeMessageVisibility` to those principals. Empty means no queue policy.
 
 ## Usage
@@ -53,7 +53,7 @@ No resources.
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_context"></a> [context](#input\_context) | Deployment context used for naming, tagging and environment-dependent defaults. | <pre>object({<br/>    organization = string<br/>    environment  = string<br/>    application  = string<br/>    component    = optional(string)<br/>    owner        = string<br/>    cost_center  = string<br/>    extra_tags   = optional(map(string), {})<br/>  })</pre> | n/a | yes |
-| <a name="input_name"></a> [name](#input\_name) | Base queue name. Lowercase letters, digits and hyphens, at most 75 characters so that the ".fifo" suffix and the "-dlq" companion name stay within the 80-character SQS limit. | `string` | n/a | yes |
+| <a name="input_name"></a> [name](#input\_name) | Base queue name. Lowercase letters, digits and hyphens, at most 71 characters (80 minus 5 for ".fifo" and 4 for "-dlq") so the FIFO suffix and the dead-letter queue name both fit the 80-character SQS limit. | `string` | n/a | yes |
 | <a name="input_consumer_principals"></a> [consumer\_principals](#input\_consumer\_principals) | IAM principal ARNs allowed to receive, delete, change visibility and read attributes of messages. Empty creates no queue policy. | `list(string)` | `[]` | no |
 | <a name="input_create"></a> [create](#input\_create) | Whether to create any resources. Set false to create nothing. | `bool` | `true` | no |
 | <a name="input_dead_letter"></a> [dead\_letter](#input\_dead\_letter) | Dead-letter queue settings. enabled creates the DLQ (named <name>-dlq); max\_receive\_count is receives before a message moves to the DLQ; retention\_s is DLQ message retention in seconds. | <pre>object({<br/>    enabled           = optional(bool, true)<br/>    max_receive_count = optional(number, 5)<br/>    retention_s       = optional(number, 1209600)<br/>  })</pre> | `{}` | no |
@@ -70,6 +70,7 @@ No resources.
 | <a name="output_arn"></a> [arn](#output\_arn) | ARN of the main queue. Null when create is false. |
 | <a name="output_dlq_arn"></a> [dlq\_arn](#output\_dlq\_arn) | ARN of the dead-letter queue. Null when create is false or the dead-letter queue is disabled. |
 | <a name="output_dlq_url"></a> [dlq\_url](#output\_dlq\_url) | URL of the dead-letter queue. Null when create is false or the dead-letter queue is disabled. |
+| <a name="output_encryption"></a> [encryption](#output\_encryption) | Encryption settings passed to the queue and its dead-letter queue: sqs\_managed\_sse\_enabled and kms\_master\_key\_id. Null when create is false. |
 | <a name="output_id"></a> [id](#output\_id) | Identifier (URL) of the main queue. Null when create is false. |
 | <a name="output_name"></a> [name](#output\_name) | Name of the main queue, including the .fifo suffix for FIFO queues. Null when create is false. |
 | <a name="output_tags"></a> [tags](#output\_tags) | Tags applied to every taggable resource, with context.extra\_tags merged in. Null when create is false. |

@@ -4,6 +4,11 @@ locals {
   # SSE is always on: a customer-managed key when supplied, SQS-managed otherwise.
   use_cmk = var.kms_key_arn != null
 
+  encryption = {
+    sqs_managed_sse_enabled = !local.use_cmk
+    kms_master_key_id       = var.kms_key_arn
+  }
+
   consumer_statements = length(var.consumer_principals) > 0 ? {
     consumers = {
       sid = "ConsumerAccess"
@@ -31,17 +36,17 @@ module "this" {
   visibility_timeout_seconds = var.visibility_timeout_s
   message_retention_seconds  = var.message_retention_s
 
-  sqs_managed_sse_enabled = local.use_cmk ? false : true
-  kms_master_key_id       = var.kms_key_arn
+  sqs_managed_sse_enabled = local.encryption.sqs_managed_sse_enabled
+  kms_master_key_id       = local.encryption.kms_master_key_id
 
   create_dlq                    = var.dead_letter.enabled
   dlq_name                      = "${var.name}-dlq"
   dlq_message_retention_seconds = var.dead_letter.retention_s
-  dlq_sqs_managed_sse_enabled   = local.use_cmk ? false : true
-  dlq_kms_master_key_id         = var.kms_key_arn
-  redrive_policy = {
-    maxReceiveCount = var.dead_letter.max_receive_count
-  }
+  dlq_sqs_managed_sse_enabled   = local.encryption.sqs_managed_sse_enabled
+  dlq_kms_master_key_id         = local.encryption.kms_master_key_id
+  # Upstream merges deadLetterTargetArn only when create_dlq is true; with no DLQ a
+  # non-empty redrive_policy would create a policy with no target, so pass {}.
+  redrive_policy = var.dead_letter.enabled ? { maxReceiveCount = var.dead_letter.max_receive_count } : {}
 
   create_queue_policy     = length(var.consumer_principals) > 0
   queue_policy_statements = local.consumer_statements
