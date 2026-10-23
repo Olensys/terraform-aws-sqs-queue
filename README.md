@@ -1,6 +1,6 @@
-# __NAME__
+# terraform-aws-sqs-queue
 
-__DESCRIPTION__
+SQS queue with a dead-letter queue by default, server-side encryption always on, optional FIFO
 
 ## Opinions
 
@@ -10,7 +10,7 @@ __DESCRIPTION__
 
 ```hcl
 module "this" {
-  source = "git::https://github.com/Olensys/__NAME__.git?ref=v1.0.0"
+  source = "git::https://github.com/Olensys/terraform-aws-sqs-queue.git?ref=v1.0.0"
 
   name = "example"
   context = {
