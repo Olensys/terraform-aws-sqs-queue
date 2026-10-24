@@ -1,7 +1,7 @@
 name: terraform-aws-sqs-queue
 cloud: aws
 tier: capability
-maturity: experimental
+maturity: stable
 description: SQS queue with a dead-letter queue by default, server-side encryption always on, optional FIFO
 owners: [platform]
 upstream: "terraform-aws-modules/sqs/aws 5.2.2"
