@@ -12,17 +12,17 @@ SQS queue with a dead-letter queue by default, server-side encryption always on,
 ## Usage
 
 ```hcl
-module "this" {
-  source = "git::https://github.com/Olensys/terraform-aws-sqs-queue.git?ref=v1.0.0"
+module "naming" {
+  source  = "git::https://github.com/Olensys/terraform-null-naming.git?ref=v1.0.1"
+  context = var.context
+}
 
-  name = "example"
-  context = {
-    organization = "olensys"
-    environment  = "dev"
-    application  = "example"
-    owner        = "platform"
-    cost_center  = "eng"
-  }
+module "sqs_queue" {
+  source  = "git::https://github.com/Olensys/terraform-aws-sqs-queue.git?ref=v1.0.1"
+  name    = module.naming.name
+  context = var.context
+
+  tags = module.naming.tags
 }
 ```
 
