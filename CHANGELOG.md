@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2](https://github.com/Olensys/terraform-aws-sqs-queue/compare/v1.0.1...v1.0.2) (2026-10-24)
+
+
+### Bug Fixes
+
+* **examples:** pin naming module to v1.0.1 ([35b5e52](https://github.com/Olensys/terraform-aws-sqs-queue/commit/35b5e524251f0dea061afb6f7da9b2271c369da5))
+* run integration on change and weekly instead of nightly ([019c372](https://github.com/Olensys/terraform-aws-sqs-queue/commit/019c37237e3b6c8cd32872784d261482bccf303a))
+
 ## 1.0.1
 
 ### Fixes
