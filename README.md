@@ -5,6 +5,7 @@ SQS queue with a dead-letter queue by default, server-side encryption always on,
 ## Opinions
 
 - A dead-letter queue is created by default (`<name>-dlq`, 5 receives, 14 days retention); disable with `dead_letter = { enabled = false }`.
+- `receive_wait_time_s` (default 0, short polling) sets how long a receive call waits, on the queue and its dead-letter queue; 1 to 20 enables long polling.
 - Server-side encryption is always on: SQS-managed by default, or the customer-managed key in `kms_key_arn`. It cannot be switched off. The same setting applies to the dead-letter queue.
 - The `.fifo` suffix is appended automatically when `fifo = true`; pass the base name only. `name` is limited to 71 characters (80 minus 5 for `.fifo` and 4 for the `-dlq` companion) so that the FIFO suffix and the dead-letter queue name both stay within the 80-character SQS limit. The limit is fixed rather than dependent on `fifo` or `dead_letter` because variable validations on Terraform 1.5 cannot read other variables.
 - `consumer_principals` creates a queue policy allowing `sqs:ReceiveMessage`, `sqs:DeleteMessage`, `sqs:GetQueueAttributes` and `sqs:ChangeMessageVisibility` to those principals. Empty means no queue policy.
@@ -60,6 +61,7 @@ No resources.
 | <a name="input_fifo"></a> [fifo](#input\_fifo) | Create a FIFO queue. The module appends the ".fifo" suffix to the name. | `bool` | `false` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | Customer-managed KMS key ARN for encryption. Null uses SQS-managed server-side encryption. Encryption is always on. | `string` | `null` | no |
 | <a name="input_message_retention_s"></a> [message\_retention\_s](#input\_message\_retention\_s) | How long messages are retained, in seconds (60 to 1209600). Default is 4 days. | `number` | `345600` | no |
+| <a name="input_receive_wait_time_s"></a> [receive\_wait\_time\_s](#input\_receive\_wait\_time\_s) | Seconds a receive call waits for a message (0 to 20). 0 is short polling; 1 to 20 is long polling. Applies to the queue and its dead-letter queue. | `number` | `0` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags merged onto every taggable resource, applied last. | `map(string)` | `{}` | no |
 | <a name="input_visibility_timeout_s"></a> [visibility\_timeout\_s](#input\_visibility\_timeout\_s) | Visibility timeout in seconds (0 to 43200). | `number` | `30` | no |
 

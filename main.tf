@@ -35,6 +35,7 @@ module "this" {
 
   visibility_timeout_seconds = var.visibility_timeout_s
   message_retention_seconds  = var.message_retention_s
+  receive_wait_time_seconds  = var.receive_wait_time_s
 
   sqs_managed_sse_enabled = local.encryption.sqs_managed_sse_enabled
   kms_master_key_id       = local.encryption.kms_master_key_id
@@ -42,6 +43,7 @@ module "this" {
   create_dlq                    = var.dead_letter.enabled
   dlq_name                      = "${var.name}-dlq"
   dlq_message_retention_seconds = var.dead_letter.retention_s
+  dlq_receive_wait_time_seconds = var.receive_wait_time_s
   dlq_sqs_managed_sse_enabled   = local.encryption.sqs_managed_sse_enabled
   dlq_kms_master_key_id         = local.encryption.kms_master_key_id
   # Upstream merges deadLetterTargetArn only when create_dlq is true; with no DLQ a
