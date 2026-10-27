@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Olensys/terraform-aws-sqs-queue/compare/v1.0.3...v1.1.0) (2026-10-27)
+
+
+### Features
+
+* add receive_wait_time_s ([#5](https://github.com/Olensys/terraform-aws-sqs-queue/issues/5)) ([6b66bf1](https://github.com/Olensys/terraform-aws-sqs-queue/commit/6b66bf1647f0c944d631bcac3bae7cd02279aee4))
+
 ## [1.0.3](https://github.com/Olensys/terraform-aws-sqs-queue/compare/v1.0.2...v1.0.3) (2026-10-24)
 
 
