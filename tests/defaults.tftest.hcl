@@ -98,6 +98,30 @@ run "test_sse_always_with_cmk" {
   }
 }
 
+run "test_receive_wait_time_validation" {
+  command = plan
+
+  variables {
+    receive_wait_time_s = 21
+  }
+
+  expect_failures = [var.receive_wait_time_s]
+}
+
+run "test_receive_wait_time_accepted" {
+  # SMOKE: the value goes to the child module's queue and DLQ; this proves the input plans.
+  command = plan
+
+  variables {
+    receive_wait_time_s = 20
+  }
+
+  assert {
+    condition     = var.receive_wait_time_s == 20
+    error_message = "receive_wait_time_s must accept 20."
+  }
+}
+
 run "test_create_false_plans_nothing" {
   command = plan
 

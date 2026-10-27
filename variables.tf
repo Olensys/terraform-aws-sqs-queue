@@ -46,6 +46,16 @@ variable "visibility_timeout_s" {
   }
 }
 
+variable "receive_wait_time_s" {
+  description = "Seconds a receive call waits for a message (0 to 20). 0 is short polling; 1 to 20 is long polling. Applies to the queue and its dead-letter queue."
+  type        = number
+  default     = 0
+  validation {
+    condition     = var.receive_wait_time_s >= 0 && var.receive_wait_time_s <= 20
+    error_message = "receive_wait_time_s must be between 0 and 20."
+  }
+}
+
 variable "message_retention_s" {
   description = "How long messages are retained, in seconds (60 to 1209600). Default is 4 days."
   type        = number
